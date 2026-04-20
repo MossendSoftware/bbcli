@@ -26,17 +26,35 @@ then restart your shell. After that, `bb` is available anywhere.
 
 ## Authentication
 
-bbcli authenticates against the Bitbucket API using an email address and a personal API token.
+bbcli authenticates against the Bitbucket API using your Atlassian email address and a scoped API token.
 
-1. Create an API token at <https://bitbucket.org/account/settings/personal-access-tokens>
-   - Required scopes: **Pull requests: read & write**
-2. Run:
+### Creating an API token
+
+**1.** Go to <https://id.atlassian.com/manage-profile/security/api-tokens> and click **Create API token with Scopes**.
+
+![API Tokens page](docs/images/api-tokens-page.png)
+
+**2.** Give the token a name (e.g. `BBCLI`) and set an expiry date (maximum 365 days).
+
+![Name and expiry](docs/images/api-token-name.png)
+
+**3.** Select **Bitbucket** as the app.
+
+![Select app](docs/images/api-token-select-app.png)
+
+**4.** Under **Scope actions**, check **Read** and **Write**, then click **Next** and create the token.
+
+![Select scopes](docs/images/api-token-select-scopes.png)
+
+**5.** Copy the token — it is only shown once.
+
+### Saving credentials
 
 ```bash
 bb auth login
 ```
 
-Credentials are saved to `~/.config/bbcli/credentials.yaml` with mode `600`. To switch accounts, run `bb auth login` again.
+You will be prompted for your Atlassian email and the token you just copied. Credentials are saved to `~/.config/bbcli/credentials.yaml` with mode `600`. To switch accounts, run `bb auth login` again.
 
 ## Usage
 
