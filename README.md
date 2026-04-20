@@ -6,26 +6,23 @@ Built with [Click](https://click.palletsprojects.com/) and [Rich](https://github
 
 ## Requirements
 
-- Python 3.11+
-- [uv](https://docs.astral.sh/uv/) (recommended) or pip
+- [uv](https://docs.astral.sh/uv/)
 
 ## Installation
-
-**From GitHub (recommended):**
-
-```bash
-uv tool install git+https://github.com/MossendSoftware/bbcli
-```
-
-**For local development:**
 
 ```bash
 git clone https://github.com/MossendSoftware/bbcli
 cd bbcli
-uv sync --group dev
+make install
 ```
 
-The `bb` command is available immediately inside the project environment.
+This installs `bb` as an isolated tool into `~/.local/bin`. If that directory is not yet on your `PATH`, run:
+
+```bash
+uv tool update-shell
+```
+
+then restart your shell. After that, `bb` is available anywhere.
 
 ## Authentication
 
@@ -81,7 +78,7 @@ Comment lines (`<!-- ... -->`) are stripped from the description before submissi
 ```bash
 git clone https://github.com/MossendSoftware/bbcli
 cd bbcli
-uv sync --group dev
+make dev
 ```
 
 ### Project layout
