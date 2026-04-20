@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# uv / virtualenv
+.venv/
+.python-version
+
+# Credentials (never commit these)
+credentials.yaml
+*.env
+.env*
+
+# OS
+.DS_Store
