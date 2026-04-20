@@ -1,65 +1,139 @@
 # bbcli
 
-A fast, git-context-aware Bitbucket CLI for day-to-day developer workflows.
+A fast, git-context-aware Bitbucket CLI for day-to-day developer workflows. Run common Bitbucket operations — authenticate, create pull requests, and more — without leaving the terminal.
+
+Built with [Click](https://click.palletsprojects.com/) and [Rich](https://github.com/Textualize/rich). Credentials are stored locally; no third-party service is involved.
+
+## Requirements
+
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
 
 ## Installation
 
-Requires [uv](https://docs.astral.sh/uv/).
+**From GitHub (recommended):**
 
 ```bash
-uv tool install git+https://github.com/your-org/bbcli
+uv tool install git+https://github.com/MossendSoftware/bbcli
 ```
 
-Or for local development:
+**For local development:**
 
 ```bash
-git clone https://github.com/your-org/bbcli
+git clone https://github.com/MossendSoftware/bbcli
 cd bbcli
-uv pip install -e .
+uv sync --group dev
 ```
+
+The `bb` command is available immediately inside the project environment.
 
 ## Authentication
 
-bbcli uses [Bitbucket API tokens](https://bitbucket.org/account/settings/api-tokens) with scopes.
+bbcli authenticates against the Bitbucket API using an email address and a personal API token.
 
-Create a token with **Pull requests: read & write**, then run:
+1. Create an API token at <https://bitbucket.org/account/settings/personal-access-tokens>
+   - Required scopes: **Pull requests: read & write**
+2. Run:
 
 ```bash
 bb auth login
 ```
 
-Credentials are stored at `~/.config/bbcli/credentials.yaml` (mode `600`).
+Credentials are saved to `~/.config/bbcli/credentials.yaml` with mode `600`. To switch accounts, run `bb auth login` again.
 
 ## Usage
 
-### Create a pull request
+All commands must be run from inside a Bitbucket git repository (one whose `origin` remote points to `bitbucket.org`).
 
-Run from inside any Bitbucket repository:
+### `bb auth login`
+
+Prompt for email and API token, verify them against the Bitbucket API, and save to disk.
+
+### `bb pr create`
+
+Create a pull request from the current branch.
 
 ```bash
 bb pr create
 ```
 
-bbcli infers the workspace, repo, and source branch from the git remote. You will be prompted for:
-- **Title** — pre-filled from the branch name
-- **Destination branch** — defaults to `main` or `master`
-- **Description** — opens `$EDITOR` with a markdown template
+bbcli reads the workspace, repository slug, current branch, and default branch directly from git. You are prompted for:
 
-## Commands
+| Prompt | Default |
+|---|---|
+| Title | Branch name converted to title case (prefix stripped) |
+| Destination branch | Detected default branch (`main`, `master`, or `develop`) |
+| Description | `$EDITOR` opens with a structured markdown template |
+
+Comment lines (`<!-- ... -->`) are stripped from the description before submission. If the description is left empty, you are asked to confirm before the PR is created.
+
+## Command reference
 
 | Command | Description |
 |---|---|
-| `bb auth login` | Save Bitbucket API token to disk |
+| `bb auth login` | Save Bitbucket credentials to `~/.config/bbcli/credentials.yaml` |
 | `bb pr create` | Create a PR from the current branch |
 
-More commands coming soon: `bb pr list`, `bb pr approve`, `bb pr merge`.
+## Development
 
-## Contributing
+### Setup
 
-1. Fork the repo and create a branch
-2. `uv pip install -e ".[dev]"`
-3. Open a PR — the project uses itself for PR workflows
+```bash
+git clone https://github.com/MossendSoftware/bbcli
+cd bbcli
+uv sync --group dev
+```
+
+### Project layout
+
+```
+src/bbcli/
+  cli.py            # Entry point, registers command groups
+  api.py            # Bitbucket REST API client
+  config.py         # Credential load/save
+  git_context.py    # Git remote parsing and branch detection
+  commands/
+    auth.py         # bb auth *
+    pr.py           # bb pr *
+```
+
+### Running locally
+
+```bash
+uv run bb --help
+```
+
+### Running tests
+
+```bash
+uv run pytest
+```
+
+### Contributing
+
+1. Branch off `main` using a descriptive name: `feat/`, `fix/`, `chore/`, or `docs/` prefix.
+2. Open a pull request against `main`. A member of the **Developers** group must approve it before it can be merged.
+3. Keep commits focused; squash noise before opening the PR.
+
+### Releasing
+
+Releases follow [Semantic Versioning](https://semver.org/): `v{MAJOR}.{MINOR}.{PATCH}`.
+
+| Change type | Version bump |
+|---|---|
+| Breaking changes | MAJOR |
+| New backwards-compatible features | MINOR |
+| Bug fixes, patches | PATCH |
+
+Only members of the **Developers** group may create and push release tags:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Tags must be pushed from a commit on `main`. The tag name must match `v*.*.*` exactly.
 
 ## License
 
-MIT
+[MIT](LICENSE)
